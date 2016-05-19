@@ -56,7 +56,6 @@ class Matrix[T: ClassTag] private(private val values: Array[T], private val _wid
       }).toArray, this.rows)
   }
 
-
   override def equals(obj: scala.Any): Boolean = {
     obj match {
       case that: Matrix[T] =>
