@@ -1,29 +1,10 @@
 package me.shreyasr.graphics
 
-import me.shreyasr.graphics.Matrix.MatrixMult
+import me.shreyasr.graphics.Matrix.ElementMath
 
 import scala.reflect.ClassTag
 
 object Matrix {
-
-  /*
-//  implicit def canBuildFrom[A]: CanBuildFrom[Matrix[_], A, Matrix[A]] = new GenericCanBuildFrom[A]
-  implicit def canBuildFrom[A]: CanBuildFrom[Matrix[_], A, Matrix[A]] =
-    new CanBuildFrom[Matrix[_], A, Matrix[A]] {
-      def apply(): mutable.Builder[A, Matrix[A]] = newBuilder
-      def apply(from: Matrix[_]): mutable.Builder[A, Matrix[A]] = newBuilder(from.width)
-    }
-
-
-
-  def newBuilder[A](width: Int) = new mutable.LazyBuilder[A, Matrix[A]] {
-    def result = {
-      new Matrix(parts.flatten.toArray, width)
-    }
-  }
-
-  def newBuilder[A] = newBuilder[A](1)
-  */
 
   def apply[T: ClassTag](rows: Product*): Matrix[T] = {
     require(rows.nonEmpty, "Matrix must have rows!")
@@ -32,13 +13,13 @@ object Matrix {
     new Matrix(rows.flatMap(_.productIterator).map(_.asInstanceOf[T]).toArray, width)
   }
 
-  trait MatrixMult[T] {
+  trait ElementMath[T] {
     def add(a: T, b: T): T
     def times(a: T, b: T): T
     def zero: T
   }
 
-  implicit object MatrixMultInt extends MatrixMult[Int] {
+  implicit object ElementMathInt extends ElementMath[Int] {
     override def times(a: Int, b: Int): Int = a*b
     override def add(a: Int, b: Int): Int = a+b
     override def zero: Int = 0
@@ -63,20 +44,26 @@ class Matrix[T: ClassTag] private(private val values: Array[T], private val _wid
   def transpose: Matrix[T] =
     new Matrix(Array.tabulate(rows, cols)((r, c) => apply(r, c)).transpose.flatten, rows)
 
-  def *(that: Matrix[T])(implicit mult: MatrixMult[T]): Matrix[T] = {
+  def *(that: Matrix[T])(implicit math: ElementMath[T]): Matrix[T] = {
     if (this.cols != that.rows) throw new IllegalArgumentException("Invalid dimensions!")
     new Matrix(
       (0 until this.rows).flatMap(row => {
         (0 until that.cols).map(col => {
-          println(s" $row, $col")
-          var accum = mult.zero
-          (0 until this.cols).foreach(k => {
-            accum = mult.add(accum, mult.times(this(row, k), that(k, col)))
-            println(this(row, k), that(k, col), accum)
+          (0 until this.cols).foldLeft[T](math.zero)((accum, next) => {
+            math.add(accum, math.times(this(row, next), that(next, col)))
           })
-          accum
         })
       }).toArray, this.rows)
+  }
+
+
+  override def equals(obj: scala.Any): Boolean = {
+    obj match {
+      case that: Matrix[T] =>
+        this.rows == that.rows && this.cols == that.cols &&
+          this.iterator.zip(that.iterator).forall(v => v._1 == v._2)
+      case _ => false
+    }
   }
 
   override def toString(): String = values.sliding(cols, cols).map(_.mkString(",")).mkString("\n")
