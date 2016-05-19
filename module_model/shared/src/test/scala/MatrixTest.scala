@@ -10,6 +10,14 @@ object MatrixTest extends TestSuite {
       assert(matrix.cols == 3)
       assert(matrix.cols * matrix.rows == 6)
       assert(matrix.iterator.toArray sameElements Array(1, 2, 3, 4, 5, 6))
+      intercept[IllegalArgumentException](Matrix((3,4,5), (2, 3)))
+    }
+    'MatrixEquality {
+      val matrix = Matrix[Int]((1,2,3), (4,5,6))
+      assert(matrix == Matrix[Int]((1,2,3), (4,5,6)))
+      assert(matrix != Matrix[Int]((0,2,3), (4,5,6)))
+      assert(matrix != Matrix[Int]((1,2,3,4), (5,6,7,8)))
+      assert(matrix != Matrix[Int]((1,2), (3,4)))
     }
     'MatrixTraversable {
       val matrix = Matrix[Int]((1, 2, 3), (4, 5, 6))

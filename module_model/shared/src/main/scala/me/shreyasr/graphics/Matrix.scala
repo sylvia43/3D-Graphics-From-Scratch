@@ -60,7 +60,8 @@ class Matrix[T: ClassTag] private(private val values: Array[T], private val _wid
     obj match {
       case that: Matrix[T] =>
         this.rows == that.rows && this.cols == that.cols &&
-          this.iterator.zip(that.iterator).forall(v => v._1 == v._2)
+//          this.iterator.zip(that.iterator).forall(v => v._1 == v._2)
+          (this, that.toIterable).zipped.forall(_ == _)
       case _ => false
     }
   }
