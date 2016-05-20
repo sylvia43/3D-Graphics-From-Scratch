@@ -34,7 +34,9 @@ object MatrixTest extends TestSuite {
     }
     'SpecialMatrixConstruction {
       assert(Matrix.identity(3) == Matrix((1, 0, 0), (0, 1, 0), (0, 0, 1)))
+      assert(Matrix.identity(4) == Matrix((1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1)))
       assert(Matrix.translation(Vec(1,2,3)) == Matrix((1, 0, 0, 1), (0, 1, 0, 2), (0, 0, 1, 3), (0, 0, 0, 1)))
+      assert(Matrix.scale(Vec(2,3,4)) == Matrix((2, 0, 0, 0), (0, 3, 0, 0), (0, 0, 4, 0), (0, 0, 0, 1)))
     }
   }
 }

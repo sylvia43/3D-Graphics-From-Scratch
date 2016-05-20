@@ -3,19 +3,20 @@ package me.shreyasr.graphics
 object Matrix {
 
   def translation(vec: Vec): Matrix = {
-    var matrix = identity(vec.size+1)
-    (0 until vec.size).foreach(i => {
-      matrix = matrix.set(i, matrix.rows-1)(vec(i))
-    })
-    matrix
+    require(vec.size == 3)
+    (0 until 3).foldLeft(identity(4))((matrix, i) => matrix.set(i, matrix.rows-1)(vec(i)))
+  }
+
+  def scale(vec: Vec): Matrix = {
+    require(vec.size == 3)
+    (0 until 3).foldLeft(identity(4))((matrix, i) => matrix.set(i, i)(vec(i)))
   }
 
   def identity(size: Int): Matrix = {
-    new Matrix((0 until size).flatMap(row => {
-      (0 until size).map(col => {
-        if (row == col) 1f else 0f
-      })
-    }).toArray, size)
+    new Matrix(
+      (0 until size).map(i => i*(size+1))
+        .foldLeft(new Array[Float](size*size))((arr, i) => { arr.update(i, 1); arr }),
+      size)
   }
 
   def apply(rows: Product*): Matrix = {
@@ -43,7 +44,6 @@ class Matrix private(private val values: Array[Float], private val _cols: Int) {
   def index(row: Int, col: Int): Int = row*cols + col
   def set(row: Int, col: Int)(float: Float) = new Matrix(values.updated(index(row, col), float), cols)
 
-  def length: Int = values.length
   def foreach[U](f: Float => U): Unit = values.foreach(f)
   def iterator: Iterator[Float] = values.iterator
   def map(f: Float => Float): Matrix = new Matrix(values.map(f).array, cols)
@@ -63,6 +63,9 @@ class Matrix private(private val values: Array[Float], private val _cols: Int) {
       }).toArray, this.rows)
   }
 
+  def *(scalar: Float): Matrix = map(_ * scalar)
+  def *(scalar: Int): Matrix = map(_ * scalar)
+
   override def equals(obj: scala.Any): Boolean = {
     obj match {
       case that: Matrix =>
@@ -72,5 +75,5 @@ class Matrix private(private val values: Array[Float], private val _cols: Int) {
     }
   }
 
-  override def toString: String = values.sliding(cols, cols).map(_.mkString(",")).mkString("\n")
+  override def toString: String = values.sliding(cols, cols).map(_.mkString(", ")).mkString("\n")
 }
