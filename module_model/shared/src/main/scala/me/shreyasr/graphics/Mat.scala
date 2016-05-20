@@ -94,7 +94,7 @@ class Mat private(private val values: Array[Float], private val _cols: Int) {
   def *(scalar: Int): Mat = map(_ * scalar)
 
   def *(v: Vec): Vec = {
-    require(v.length == rows && rows == cols)
+    require(v.length == rows && rows == cols, s"Mat * vec: ${rows}x$cols * ${v.length}x1")
     Vec((0 until v.length).map(idx => {
       (0 until v.length).foldLeft(0f)((a, i) => a + v(i) * get(idx, i))
     }) :_*)

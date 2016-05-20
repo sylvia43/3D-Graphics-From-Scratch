@@ -15,25 +15,37 @@ object App extends JSApp {
 
   def setupUi(): Unit = {
     val canvas = jQuery("canvas").get(0).asInstanceOf[Canvas]
-    canvas.style.background = "#0000FF"
+    canvas.style.background = "#660000"
     val ctx = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
     timers.setInterval(100)(() -> update(ctx))
   }
+
+  val engine = new Engine
+  val worldPoints: Array[Vec] = (1 to 50)
+    .map(i => Vec(math.random.toFloat*200-100, math.random.toFloat*200-100, -math.random.toFloat*100, 1)).toArray
+
+  var rotation = 0f
 
   def update(g: CanvasRenderingContext2D): Unit = {
     g.canvas.width = window.innerWidth
     g.canvas.height = window.innerHeight
 
-    g.fillStyle="#FF0000"
-    g.strokeStyle="#00FF00"
-    g.lineWidth=50
-    g.fill()
-    g.beginPath()
-    g.moveTo(0, 0)
-    g.lineTo(0, 400)
-    g.lineTo(400, 400)
-    g.lineTo(400, 0)
-    g.lineTo(0, 0)
-    g.stroke()
+    val screenPoints = engine.execute(worldPoints,
+      Vec(0, 0, 0), // translate
+      Vec(1, 1, 1), // scale
+      Vec(0, 0, rotation), // rotate
+      g.canvas.width, g.canvas.height) // screen coords)
+
+    rotation += 0.1f
+    println(screenPoints.length, screenPoints.head)
+
+//    g.lineWidth=50
+//    g.fill()
+    screenPoints.foreach(vec => {
+      g.fillStyle=s"rgb(0,0,${(vec(2)*255).toInt})"
+      g.beginPath()
+      g.arc(vec(0), vec(1), 10, 0, 2*math.Pi)
+      g.fill()
+    })
   }
 }

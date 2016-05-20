@@ -13,7 +13,7 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.11.8"
 )
 
-lazy val frontend = project.in(file("module_frontend"))
+lazy val frontend: Project = project.in(file("module_frontend"))
   .enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
   .settings(
@@ -28,6 +28,14 @@ lazy val frontend = project.in(file("module_frontend"))
     jsDependencies += RuntimeDOM
   )
   .dependsOn(modelJs)
+
+//resourceGenerators in Compile += Def.task {
+//  val f1 = (fastOptJS in Compile in frontend).value.data
+//  val f1SourceMap = f1.getParentFile / (f1.getName + ".map")
+//  val f2 = (packageScalaJSLauncher in Compile in frontend).value.data
+//  val f3 = (packageJSDependencies in Compile in frontend).value
+//  Seq(f1, f1SourceMap, f2, f3)
+//}.taskValue
 
 lazy val modelProject = crossProject.in(file("module_model"))
   .settings(commonSettings: _*)

@@ -7,7 +7,7 @@ object EngineTest extends TestSuite {
 
   override def tests = TestSuite {
     val screenVec = engine.execute(
-      Array(Vec(0, 0, -50, 1)), // starting vector
+      Array(Vec(0, 0, -90, 1)), // starting vector
       Vec(0, 0, 0), // translate
       Vec(1, 1, 1), // scale
       Vec(0, 0, 0), // rotate
