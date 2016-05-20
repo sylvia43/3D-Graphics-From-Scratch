@@ -29,7 +29,7 @@ object Mat {
 
   def rotate(vec: Vec): Mat = {
     require(vec.length == 3)
-    (0 until 3).foldLeft(identity(3))((mat: Mat, idx: Int) => rotate(idx)(vec(idx)) * mat)
+    (0 until 3).foldLeft(identity(4))((mat: Mat, idx: Int) => rotate(idx)(vec(idx)) * mat)
   }
 
   def rotate(axisIdx: Int)(theta: Float): Mat = {
@@ -78,6 +78,7 @@ class Mat private(private val values: Array[Float], private val _cols: Int) {
     new Mat(Array.tabulate(rows, cols)((r, c) => apply(r, c)).transpose.flatten, rows)
 
   def *(that: Mat): Mat = {
+    require(this.cols == that.rows, s"Invalid dimensions! ${rows}x$cols * ${that.rows}x${that.cols}")
     if (this.cols != that.rows) throw new IllegalArgumentException("Invalid dimensions!")
     new Mat(
       (0 until this.rows).flatMap(row => {
