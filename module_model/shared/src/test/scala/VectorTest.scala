@@ -19,5 +19,11 @@ object VectorTest extends TestSuite {
       assert(vector.map(_ + 3) == Vec(4, 5, 6))
       assert(vector.map(_ + 3).get(1) == 5)
     }
+    'VectorScalarMult {
+      val vector3 = Vec(1, 2, 3)
+      val vector2 = Vec(2, 3)
+      assert((vector3 scalar vector2) == Vec(2, 6, 3))
+      intercept[IllegalArgumentException](vector2 scalar vector3)
+    }
   }
 }

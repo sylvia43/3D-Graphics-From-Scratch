@@ -2,13 +2,21 @@ package me.shreyasr.graphics
 
 object Mat {
 
+  def ortho(width: Float, height: Float, near: Float, far: Float): Mat = {
+    Mat(
+      (1/width, 0, 0, 0),
+      (0, 1/height, 0, 0),
+      (0, 0, -2/(far-near), -(far+near)/(far-near)),
+      (0, 0, 0, 1))
+  }
+
   def translation(vec: Vec): Mat = {
-    require(vec.size == 3)
+    require(vec.length == 3)
     (0 until 3).foldLeft(identity(4))((matrix, i) => matrix.set(i, matrix.rows-1)(vec(i)))
   }
 
   def scale(vec: Vec): Mat = {
-    require(vec.size == 3)
+    require(vec.length == 3)
     (0 until 3).foldLeft(identity(4))((matrix, i) => matrix.set(i, i)(vec(i)))
   }
 
@@ -20,7 +28,7 @@ object Mat {
   }
 
   def rotate(vec: Vec): Mat = {
-    require(vec.size == 3)
+    require(vec.length == 3)
     (0 until 3).foldLeft(identity(3))((mat: Mat, idx: Int) => rotate(idx)(vec(idx)) * mat)
   }
 
@@ -85,9 +93,9 @@ class Mat private(private val values: Array[Float], private val _cols: Int) {
   def *(scalar: Int): Mat = map(_ * scalar)
 
   def *(v: Vec): Vec = {
-    require(v.size == rows && rows == cols)
-    Vec((0 until v.size).map(idx => {
-      (0 until v.size).foldLeft(0f)((a, i) => a + v(i) * get(idx, i))
+    require(v.length == rows && rows == cols)
+    Vec((0 until v.length).map(idx => {
+      (0 until v.length).foldLeft(0f)((a, i) => a + v(i) * get(idx, i))
     }) :_*)
   }
 
