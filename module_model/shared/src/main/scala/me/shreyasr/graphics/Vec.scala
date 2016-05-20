@@ -7,6 +7,11 @@ object Vec {
 
 class Vec private(private val values: Float*) {
 
+  def x: Float = apply(0)
+  def y: Float = apply(1)
+  def z: Float = apply(2)
+  def w: Float = apply(3)
+
   def /(f: Float) = this.map(_ / f)
   def +(n: Int) = this.map(_ + n)
   def scalar(v: Vec): Vec = {
@@ -33,5 +38,5 @@ class Vec private(private val values: Float*) {
     }
   }
 
-  override def toString: String = values.mkString("[", ",", "]")
+  override def toString: String = values.map("%.3f".format(_)).mkString("[", ",", "]")
 }

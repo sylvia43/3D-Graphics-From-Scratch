@@ -3,9 +3,10 @@ package me.shreyasr.graphics
 class Engine {
 
   def execute(modelCoords: Array[Vec], translateVec: Vec, scaleVec: Vec, rotateVec: Vec,
+              width: Int, height: Int, near: Int, far: Int,
               screenWidth: Int, screenHeight: Int): Array[Vec] = {
     val worldCoords = modelToWorld(modelCoords, translateVec, scaleVec, rotateVec)
-    val projectionCoords = worldToProjection(worldCoords, 100, 100, 0, 100)
+    val projectionCoords = worldToProjection(worldCoords, width, height, near, far)
     val screenCoords = projectionToScreen(projectionCoords, screenWidth, screenHeight)
     screenCoords
   }
@@ -25,7 +26,7 @@ class Engine {
     // divide by W first here when we use a frustum projection
     projectionCoords
       .map(v => (v + 1) / 2) // map between 0 and 1
-      .filterNot(v => (0 to 2).exists(i => v(i) < 0 || v(i) > 1)) // >= one component outside of unit cube
+      .filterNot(v => (0 to 1).exists(i => v(i) < 0 || v(i) > 1)) // >= one component outside of unit cube
       .map(_ scalar Vec(screenWidth, screenHeight)) // scale to screen size
   }
 }

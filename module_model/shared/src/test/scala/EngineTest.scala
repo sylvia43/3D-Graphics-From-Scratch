@@ -11,6 +11,7 @@ object EngineTest extends TestSuite {
       Vec(0, 0, 0), // translate
       Vec(1, 1, 1), // scale
       Vec(0, 0, 0), // rotate
+      100, 100, 0, 100,
       100, 100) // screen coords
       .head
     println(screenVec)
