@@ -19,6 +19,11 @@ object Mat {
       size)
   }
 
+  def rotate(vec: Vec): Mat = {
+    require(vec.size == 3)
+    (0 until 3).foldLeft(identity(3))((mat: Mat, idx: Int) => rotate(idx)(vec(idx)) * mat)
+  }
+
   def rotate(axisIdx: Int)(theta: Float): Mat = {
     var matrix = identity(4)
     val iter = List(math.cos(theta), -math.sin(theta), math.sin(theta), math.cos(theta)).iterator
@@ -52,7 +57,8 @@ class Mat private(private val values: Array[Float], private val _cols: Int) {
   def cols: Int = _cols
   def rows: Int = values.length / _cols
 
-  def apply(row: Int, col: Int): Float = values(index(row, col))
+  def apply(row: Int, col: Int): Float = get(row, col)
+  def get(row: Int, col: Int): Float = values(index(row, col))
   def index(row: Int, col: Int): Int = row*cols + col
   def set(row: Int, col: Int)(float: Float) = new Mat(values.updated(index(row, col), float), cols)
 
@@ -77,6 +83,13 @@ class Mat private(private val values: Array[Float], private val _cols: Int) {
 
   def *(scalar: Float): Mat = map(_ * scalar)
   def *(scalar: Int): Mat = map(_ * scalar)
+
+  def *(v: Vec): Vec = {
+    require(v.size == rows && rows == cols)
+    Vec((0 until v.size).map(idx => {
+      (0 until v.size).foldLeft(0f)((a, i) => a + v(i) * get(idx, i))
+    }) :_*)
+  }
 
   override def equals(obj: scala.Any): Boolean = {
     obj match {

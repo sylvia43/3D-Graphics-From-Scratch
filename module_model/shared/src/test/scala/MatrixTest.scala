@@ -53,5 +53,10 @@ object MatrixTest extends TestSuite {
         (0, 0, 1, 0),
         (0, 0, 0, 1)))
     }
+    'MatrixVecMultiplication {
+      val matrix = Mat((1, 2, 3), (4, 5, 6), (7, 8, 9))
+      val vec = Vec(2, 3, 4)
+      assert(matrix * vec == Vec(20, 47, 74))
+    }
   }
 }
