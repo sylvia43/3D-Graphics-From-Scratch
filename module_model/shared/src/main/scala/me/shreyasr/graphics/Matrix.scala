@@ -6,6 +6,22 @@ import scala.reflect.ClassTag
 
 object Matrix {
 
+  def translation[T: ClassTag](vec: Vec[T]): Matrix[T] = {
+    val matrix = identity[T](vec.size+1)
+    (0 to vec.size).foreach(i => {
+      matrix(matrix.rows, i) == vec(i)
+    })
+    matrix
+  }
+
+  def identity[T: ClassTag](size: Int)(implicit math: ElementMath[T]): Matrix[T] = {
+    new Matrix((0 until size).flatMap(row => {
+      (0 until size).map(col => {
+        if (row == col) math.one else math.zero
+      })
+    }).toArray, size)
+  }
+
   def apply[T: ClassTag](rows: Product*): Matrix[T] = {
     require(rows.nonEmpty, "Matrix must have rows!")
     val width = rows.head.productArity
@@ -17,12 +33,21 @@ object Matrix {
     def add(a: T, b: T): T
     def times(a: T, b: T): T
     def zero: T
+    def one: T
   }
 
   implicit object ElementMathInt extends ElementMath[Int] {
     override def times(a: Int, b: Int): Int = a*b
     override def add(a: Int, b: Int): Int = a+b
     override def zero: Int = 0
+    override def one: Int = 1
+  }
+
+  implicit object ElementMathFloat extends ElementMath[Float] {
+    override def times(a: Float, b: Float): Float = a*b
+    override def add(a: Float, b: Float): Float = a+b
+    override def zero: Float = 0f
+    override def one: Float = 1f
   }
 }
 
@@ -60,7 +85,6 @@ class Matrix[T: ClassTag] private(private val values: Array[T], private val _wid
     obj match {
       case that: Matrix[T] =>
         this.rows == that.rows && this.cols == that.cols &&
-//          this.iterator.zip(that.iterator).forall(v => v._1 == v._2)
           (this, that.toIterable).zipped.forall(_ == _)
       case _ => false
     }

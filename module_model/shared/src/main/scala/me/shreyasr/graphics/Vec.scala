@@ -4,19 +4,18 @@ import scala.collection.TraversableLike
 import scala.collection.generic.{CanBuildFrom, GenericTraversableTemplate, TraversableFactory}
 import scala.collection.mutable.ListBuffer
 
-object Vector extends TraversableFactory[Vector] {
+object Vec extends TraversableFactory[Vec] {
 
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Vector[A]] = new GenericCanBuildFrom[A]
-  def newBuilder[A] = new ListBuffer[A].mapResult(x => new Vector[A](x:_*))
+  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Vec[A]] = new GenericCanBuildFrom[A]
+  def newBuilder[A] = new ListBuffer[A].mapResult(x => new Vec[A](x:_*))
 }
 
-class Vector[T] private(private val values: T*)
+class Vec[T] private(private val values: T*)
   extends Traversable[T]
-    with GenericTraversableTemplate[T, Vector]
-    with TraversableLike[T, Vector[T]] {
+    with GenericTraversableTemplate[T, Vec]
+    with TraversableLike[T, Vec[T]] {
 
-  override def companion = Vector
-
+  override def companion = Vec
 
   def apply(index: Int): T = values(index)
   def length: Int = values.length
@@ -25,7 +24,7 @@ class Vector[T] private(private val values: T*)
 
   override def equals(obj: scala.Any): Boolean = {
     obj match {
-      case that: Vector[T] => this.length == that.length &&
+      case that: Vec[T] => this.length == that.length &&
         (this, that.toIterable).zipped.forall(== _)
       case _ => false
     }

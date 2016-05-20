@@ -1,4 +1,4 @@
-import me.shreyasr.graphics.Matrix
+import me.shreyasr.graphics.{Matrix, Vec}
 import utest._
 
 object MatrixTest extends TestSuite {
@@ -31,6 +31,10 @@ object MatrixTest extends TestSuite {
       assert(matrix * matrix == Matrix[Int]((30, 36, 42), (66, 81, 96), (102, 126, 150)))
       assert(Matrix[Int](Tuple1(4), Tuple1(3)) * Matrix[Int]((2, 1))
         == Matrix[Int]((8, 4), (6, 3)))
+    }
+    'SpecialMatrixConstruction {
+      assert(Matrix.identity[Int](3) == Matrix[Int]((1, 0, 0), (0, 1, 0), (0, 0, 1)))
+      assert(Matrix.translation[Int](Vec(1,2,3)) == Matrix[Int]((1, 0, 0), (0, 1, 0), (0, 0, 1)))
     }
   }
 }
