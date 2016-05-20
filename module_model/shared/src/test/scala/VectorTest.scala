@@ -17,6 +17,7 @@ object VectorTest extends TestSuite {
     'VectorTraversable {
       val vector = Vec(1, 2, 3)
       assert(vector.map(_ + 3) == Vec(4, 5, 6))
+      assert(vector.map(_ + 3).get(1) == 5)
     }
   }
 }

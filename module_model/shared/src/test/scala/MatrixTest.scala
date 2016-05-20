@@ -13,28 +13,28 @@ object MatrixTest extends TestSuite {
       intercept[IllegalArgumentException](Matrix((3,4,5), (2, 3)))
     }
     'MatrixEquality {
-      val matrix = Matrix[Int]((1,2,3), (4,5,6))
-      assert(matrix == Matrix[Int]((1,2,3), (4,5,6)))
-      assert(matrix != Matrix[Int]((0,2,3), (4,5,6)))
-      assert(matrix != Matrix[Int]((1,2,3,4), (5,6,7,8)))
-      assert(matrix != Matrix[Int]((1,2), (3,4)))
+      val matrix = Matrix((1,2,3), (4,5,6))
+      assert(matrix == Matrix((1,2,3), (4,5,6)))
+      assert(matrix != Matrix((0,2,3), (4,5,6)))
+      assert(matrix != Matrix((1,2,3,4), (5,6,7,8)))
+      assert(matrix != Matrix((1,2), (3,4)))
     }
     'MatrixTraversable {
-      val matrix = Matrix[Int]((1, 2, 3), (4, 5, 6))
-      assert(matrix.transpose == Matrix[Int]((1, 4), (2, 5), (3, 6)))
-      assert(matrix.map[Int](i => i+3) == Matrix[Int]((4, 5, 6), (7, 8, 9)))
+      val matrix = Matrix((1, 2, 3), (4, 5, 6))
+      assert(matrix.transpose == Matrix((1, 4), (2, 5), (3, 6)))
+      assert(matrix.map((i: Float) => i+3) == Matrix((4, 5, 6), (7, 8, 9)))
     }
     'MatrixMult {
-      val identity = Matrix[Int]((1, 0, 0), (0, 1, 0), (0, 0, 1))
-      val matrix = Matrix[Int]((1, 2, 3), (4, 5, 6), (7, 8, 9))
+      val identity = Matrix((1, 0, 0), (0, 1, 0), (0, 0, 1))
+      val matrix = Matrix((1, 2, 3), (4, 5, 6), (7, 8, 9))
       assert(identity * matrix == matrix)
-      assert(matrix * matrix == Matrix[Int]((30, 36, 42), (66, 81, 96), (102, 126, 150)))
-      assert(Matrix[Int](Tuple1(4), Tuple1(3)) * Matrix[Int]((2, 1))
-        == Matrix[Int]((8, 4), (6, 3)))
+      assert(matrix * matrix == Matrix((30, 36, 42), (66, 81, 96), (102, 126, 150)))
+      assert(Matrix(Tuple1(4), Tuple1(3)) * Matrix((2, 1))
+        == Matrix((8, 4), (6, 3)))
     }
     'SpecialMatrixConstruction {
-      assert(Matrix.identity[Int](3) == Matrix[Int]((1, 0, 0), (0, 1, 0), (0, 0, 1)))
-      assert(Matrix.translation[Int](Vec(1,2,3)) == Matrix[Int]((1, 0, 0), (0, 1, 0), (0, 0, 1)))
+      assert(Matrix.identity(3) == Matrix((1, 0, 0), (0, 1, 0), (0, 0, 1)))
+      assert(Matrix.translation(Vec(1,2,3)) == Matrix((1, 0, 0, 1), (0, 1, 0, 2), (0, 0, 1, 3), (0, 0, 0, 1)))
     }
   }
 }

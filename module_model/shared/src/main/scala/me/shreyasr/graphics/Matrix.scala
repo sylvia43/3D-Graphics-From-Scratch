@@ -1,81 +1,63 @@
 package me.shreyasr.graphics
 
-import me.shreyasr.graphics.Matrix.ElementMath
-
-import scala.reflect.ClassTag
-
 object Matrix {
 
-  def translation[T: ClassTag](vec: Vec[T]): Matrix[T] = {
-    val matrix = identity[T](vec.size+1)
-    (0 to vec.size).foreach(i => {
-      matrix(matrix.rows, i) == vec(i)
+  def translation(vec: Vec): Matrix = {
+    var matrix = identity(vec.size+1)
+    (0 until vec.size).foreach(i => {
+      matrix = matrix.set(i, matrix.rows-1)(vec(i))
     })
     matrix
   }
 
-  def identity[T: ClassTag](size: Int)(implicit math: ElementMath[T]): Matrix[T] = {
+  def identity(size: Int): Matrix = {
     new Matrix((0 until size).flatMap(row => {
       (0 until size).map(col => {
-        if (row == col) math.one else math.zero
+        if (row == col) 1f else 0f
       })
     }).toArray, size)
   }
 
-  def apply[T: ClassTag](rows: Product*): Matrix[T] = {
+  def apply(rows: Product*): Matrix = {
     require(rows.nonEmpty, "Matrix must have rows!")
     val width = rows.head.productArity
     require(rows.forall(_.productArity == width), "Row must have same length")
-    new Matrix(rows.flatMap(_.productIterator).map(_.asInstanceOf[T]).toArray, width)
-  }
-
-  trait ElementMath[T] {
-    def add(a: T, b: T): T
-    def times(a: T, b: T): T
-    def zero: T
-    def one: T
-  }
-
-  implicit object ElementMathInt extends ElementMath[Int] {
-    override def times(a: Int, b: Int): Int = a*b
-    override def add(a: Int, b: Int): Int = a+b
-    override def zero: Int = 0
-    override def one: Int = 1
-  }
-
-  implicit object ElementMathFloat extends ElementMath[Float] {
-    override def times(a: Float, b: Float): Float = a*b
-    override def add(a: Float, b: Float): Float = a+b
-    override def zero: Float = 0f
-    override def one: Float = 1f
+    new Matrix(rows.flatMap(_.productIterator).map {
+      case i: Int => i.toFloat
+      case f: Float => f
+      case _ => 0f
+    }.toArray, width)
   }
 }
 
-class Matrix[T: ClassTag] private(private val values: Array[T], private val _width: Int) extends Traversable[T] {
+class Matrix private(private val values: Array[Float], private val _cols: Int) {
 
   require(values != null, "Matrix values cannot be null!")
   require(values.nonEmpty, "Matrix values cannot be empty!")
   require(values.length % cols == 0, s"Not rectangular: ${values.length} values with width: $cols")
 
-  def cols: Int = _width
-  def rows: Int = values.length / _width
+  def cols: Int = _cols
+  def rows: Int = values.length / _cols
 
-  def apply(row: Int, col: Int): T = values(row*cols + col)
+  def apply(row: Int, col: Int): Float = values(index(row, col))
+  def index(row: Int, col: Int): Int = row*cols + col
+  def set(row: Int, col: Int)(float: Float) = new Matrix(values.updated(index(row, col), float), cols)
 
-  override def foreach[U](f: T => U): Unit = values.foreach(f)
-  def iterator: Iterator[T] = values.iterator
-  def map[A: ClassTag](f: T => A): Matrix[A] = new Matrix(values.map(f).array, cols)
+  def length: Int = values.length
+  def foreach[U](f: Float => U): Unit = values.foreach(f)
+  def iterator: Iterator[Float] = values.iterator
+  def map(f: Float => Float): Matrix = new Matrix(values.map(f).array, cols)
 
-  def transpose: Matrix[T] =
+  def transpose: Matrix =
     new Matrix(Array.tabulate(rows, cols)((r, c) => apply(r, c)).transpose.flatten, rows)
 
-  def *(that: Matrix[T])(implicit math: ElementMath[T]): Matrix[T] = {
+  def *(that: Matrix): Matrix = {
     if (this.cols != that.rows) throw new IllegalArgumentException("Invalid dimensions!")
     new Matrix(
       (0 until this.rows).flatMap(row => {
         (0 until that.cols).map(col => {
-          (0 until this.cols).foldLeft[T](math.zero)((accum, next) => {
-            math.add(accum, math.times(this(row, next), that(next, col)))
+          (0 until this.cols).foldLeft(0f)((accum, next) => {
+            accum + this(row, next) * that(next, col)
           })
         })
       }).toArray, this.rows)
@@ -83,12 +65,12 @@ class Matrix[T: ClassTag] private(private val values: Array[T], private val _wid
 
   override def equals(obj: scala.Any): Boolean = {
     obj match {
-      case that: Matrix[T] =>
+      case that: Matrix =>
         this.rows == that.rows && this.cols == that.cols &&
-          (this, that.toIterable).zipped.forall(_ == _)
+          (this.values, that.values).zipped.forall(_ == _)
       case _ => false
     }
   }
 
-  override def toString(): String = values.sliding(cols, cols).map(_.mkString(",")).mkString("\n")
+  override def toString: String = values.sliding(cols, cols).map(_.mkString(",")).mkString("\n")
 }

@@ -1,32 +1,25 @@
 package me.shreyasr.graphics
 
-import scala.collection.TraversableLike
-import scala.collection.generic.{CanBuildFrom, GenericTraversableTemplate, TraversableFactory}
-import scala.collection.mutable.ListBuffer
+object Vec {
 
-object Vec extends TraversableFactory[Vec] {
-
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Vec[A]] = new GenericCanBuildFrom[A]
-  def newBuilder[A] = new ListBuffer[A].mapResult(x => new Vec[A](x:_*))
+  def apply(values: Float*) = new Vec(values :_*)
 }
 
-class Vec[T] private(private val values: T*)
-  extends Traversable[T]
-    with GenericTraversableTemplate[T, Vec]
-    with TraversableLike[T, Vec[T]] {
+class Vec private(private val values: Float*) {
 
-  override def companion = Vec
+  def get(index: Int) = apply(index)
+  def apply(index: Int): Float = values(index)
+  def size: Int = values.size
 
-  def apply(index: Int): T = values(index)
-  def length: Int = values.length
-
-  override def foreach[U](f: (T) => U): Unit = values.foreach(f)
+  def foreach[U](f: Float => U): Unit = values.foreach(f)
+  def map(f: Float => Float): Vec = new Vec(values.map(f) :_*)
 
   override def equals(obj: scala.Any): Boolean = {
     obj match {
-      case that: Vec[T] => this.length == that.length &&
-        (this, that.toIterable).zipped.forall(== _)
+      case that: Vec => this.size == that.size && (this.values, that.values).zipped.forall(_ == _)
       case _ => false
     }
   }
+
+  override def toString: String = values.mkString("[", ",", "]")
 }
