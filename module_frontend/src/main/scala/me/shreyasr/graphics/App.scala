@@ -41,7 +41,7 @@ object App extends JSApp {
       Vec(0, 0, 0), // translate
       Vec(1, 1, 1), // scale
       Vec(rotation, rotation, rotation), // rotate
-      400, 400, 0, 100,
+      math.toRadians(90).toFloat, math.toRadians(90).toFloat, 0, 100,
       g.canvas.width, g.canvas.height) // screen coords)
 
     rotation += 0.006f * delta

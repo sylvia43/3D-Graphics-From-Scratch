@@ -2,6 +2,15 @@ package me.shreyasr.graphics
 
 object Mat {
 
+  def perspective(fovx: Float, fovy: Float, near: Float, far: Float): Mat = {
+    Mat(
+      (math.atan(fovx/2), 0, 0, 0),
+      (0, math.atan(fovy/2), 0, 0),
+      (0, 0, -(far+near)/(far-near), -2*(far*near)/(far-near)),
+      (0, 0, -1, 0))
+  }
+
+
   def ortho(width: Float, height: Float, near: Float, far: Float): Mat = {
     Mat(
       (1/width, 0, 0, 0),
