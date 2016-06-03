@@ -18,16 +18,17 @@ class Engine {
 
   def worldToProjection(worldCoords: Array[Vec], fovx: Float, fovy: Float,
                         near: Float, far: Float): Array[Vec] = {
-    val worldToProjectionTransform = Mat.perspective(fovx, fovy, near, far)
+    println(worldCoords.head)
+    val worldToProjectionTransform = Mat.perspective(math.toRadians(fovx).toFloat, math.toRadians(fovy).toFloat, near, far)
     worldCoords.map(worldToProjectionTransform * _)
       .map(vec => if (vec.w != 1) vec / vec.w else vec) // w normalization for frustum
   }
 
   def projectionToScreen(projectionCoords: Array[Vec], screenWidth: Int, screenHeight: Int): Array[Vec] = {
-    // divide by W first here when we use a frustum projection
+    println(projectionCoords.head)
     projectionCoords
       .map(v => (v + 1) / 2) // map between 0 and 1
-//      .filterNot(v => (0 to 1).exists(i => v(i) < 0 || v(i) > 1)) // >= one component outside of unit cube
+//      .filterNot(v => (0 until 3).exists(i => v(i) < -1 || v(i) > 1)) // >= one component outside of unit cube
       .map(_ scalar Vec(screenWidth, screenHeight)) // scale to screen size
   }
 }

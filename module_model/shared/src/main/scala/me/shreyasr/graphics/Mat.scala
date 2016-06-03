@@ -6,7 +6,7 @@ object Mat {
     Mat(
       (math.atan(fovx/2), 0, 0, 0),
       (0, math.atan(fovy/2), 0, 0),
-      (0, 0, -(far+near)/(far-near), -2*(far*near)/(far-near)),
+      (0, 0, -(far+near)/(far-near), -2*far*near/(far-near)),
       (0, 0, -1, 0))
   }
 
