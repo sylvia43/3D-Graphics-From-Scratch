@@ -1,2 +1,4 @@
 *.js binary
+*.js linguist-vendored
 *.obj binary
+*.obj linguist-vendored
