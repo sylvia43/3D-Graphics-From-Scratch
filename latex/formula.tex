@@ -102,3 +102,33 @@ T=
 -\frac{1}{2} & 0 & \frac{\sqrt{3}}{2} & 2 \\
 0 & 0 & 0 & 1 \\
 \end{bmatrix}
+
+% Apply Combined Transformation
+
+\begin{bmatrix}
+\frac{\sqrt{3}}{2} & 0 & \frac{1}{2} & 5 \\
+0 & 1 & 0 & 4 \\
+-\frac{1}{2} & 0 & \frac{\sqrt{3}}{2} & 2 \\
+0 & 0 & 0 & 1 \\
+\end{bmatrix}
+\begin{bmatrix}
+  8 \\
+  3 \\
+  4 \\
+  1 \\
+\end{bmatrix} =
+\begin{bmatrix}
+  7+4\sqrt{3} \\
+  7 \\
+  -2+2\sqrt{3} \\
+  1 \\
+\end{bmatrix}
+
+% Projection Matrix
+
+\begin{bmatrix}
+  \tan^{-1}\left(\frac{FOVx}{2}\right) & 0 & 0 & 0 \\
+  0 & \tan^{-1}\left(\frac{FOVy}{2}\right) & 0 & 0 \\
+  0 & 0 & -\frac{Z_{far}+Z_{near}}{Z_{far}-Z_{near}} & -\frac{2\left(Z_{far}Z_{near}\right)}{Z_{far}-Z_{near}} \\
+  0 & 0 & -1 & 0 \\
+\end{bmatrix}

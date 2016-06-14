@@ -10,7 +10,9 @@
 
 module_frontend/target/*
 !module_frontend/target/scala-2.11/
-/project/
+/project/*
+!/project/build.properties
+!/project/plugins.sbt
 /target/
 /module_model/js/
 /module_model/jvm/
