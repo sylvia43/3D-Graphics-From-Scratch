@@ -79,6 +79,9 @@ object App extends JSApp {
   var translateY = 0f
   var translateZ = 100f
 
+  var stroke = false
+  var fill = true
+
   def onKeyDown(e: KeyboardEvent): Unit = {
     e.keyCode match {
       case KeyCode.Left => rotationY += turnSpeed*delta
@@ -91,6 +94,8 @@ object App extends JSApp {
       case KeyCode.S => translateZ -= moveSpeed*delta
       case KeyCode.Space => translateY += moveSpeed*delta
       case KeyCode.Shift => translateY -= moveSpeed*delta
+      case KeyCode.F => fill = !fill
+      case KeyCode.M => stroke = !stroke
       case _ =>
     }
   }
@@ -101,6 +106,8 @@ object App extends JSApp {
     g.canvas.width = dom.window.innerWidth
     g.canvas.height = dom.window.innerHeight
 
+//    var time = System.nanoTime()
+
     val screenPoints = engine.execute(worldPoints,
       Vec(translateX, translateY, translateZ), // translate
       Vec(1, 1, 1), // scale
@@ -108,19 +115,25 @@ object App extends JSApp {
       90, 90, 1, 1000,
       g.canvas.width, g.canvas.height) // screen coords
 
+//    println(s"math   ${(System.nanoTime() - time)/1000f/1000f}")
+//    time = System.nanoTime()
+
     screenPoints
       .sliding(3, 3).toSeq
         .sortWith((left, right) => {
-          left.map(_._1).foldLeft(0f)((a, v) => a + v.z) <
-          right.map(_._1).foldLeft(0f)((a, v) => a + v.z)
+          left.map(_._1).foldLeft(0f)((a, v) => if (v.z > a) v.z else a) <
+          right.map(_._1).foldLeft(0f)((a, v) => if (v.z > a) v.z else a)
         })
       .foreach((vecs: Array[(Vec, Vec)]) => {
       g.fillStyle=s"rgb(0,0,${(vecs.foldLeft(0f)((a: Float, vn: (Vec, Vec)) => a + vn._2.y+vn._2.x+2)/6/2*255).toInt})"
       g.beginPath()
       g.moveTo(vecs.last._1.x, vecs.last._1.y)
       vecs.foreach(vec => g.lineTo(vec._1.x, vec._1.y))
-      g.fill()
+      if (fill) g.fill()
+      if (stroke) g.stroke()
     })
+
+//    println(s"render ${(System.nanoTime() - time)/1000f/1000f}")
   }
 
   def log(obj: js.Any) = g.console.log(obj)
