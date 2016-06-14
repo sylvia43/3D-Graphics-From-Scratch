@@ -1,14 +1,14 @@
 package me.shreyasr.graphics
 
 import org.scalajs.dom
-import org.scalajs.dom.CanvasRenderingContext2D
+import org.scalajs.dom.{CanvasRenderingContext2D, Event}
 import org.scalajs.dom.ext.KeyCode
 import org.scalajs.dom.html.Canvas
-import org.scalajs.dom.raw.KeyboardEvent
+import org.scalajs.dom.raw.{KeyboardEvent, XMLHttpRequest}
 import org.scalajs.jquery.jQuery
 
 import scala.scalajs.js
-import js.Dynamic.{ global => g }
+import scala.scalajs.js.Dynamic.{global => g}
 import scala.scalajs.js.{JSApp, timers}
 
 object App extends JSApp {
@@ -17,12 +17,15 @@ object App extends JSApp {
     jQuery(setupUi _)
   }
 
+  lazy val canvas = {
+    val c = jQuery("canvas").get(0).asInstanceOf[Canvas]
+    c.onkeydown = onKeyDown _
+    c.style.background = "#660000"
+    c
+  }
+
   def setupUi(): Unit = {
-    val canvas = jQuery("canvas").get(0).asInstanceOf[Canvas]
-    canvas.onkeydown = onKeyDown _
-    canvas.style.background = "#660000"
-    val ctx = canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
-    timers.setInterval(16)(() -> update(ctx))
+    canvas.focus()
   }
 
   val getDelta = {
@@ -31,11 +34,42 @@ object App extends JSApp {
   }
 
   val engine = new Engine
-  val worldPoints: Array[Vec] = (0 until 1)
-    .map(i => Vec(math.random.toFloat*20-10, math.random.toFloat*20-10, -math.random.toFloat*5, 1)).toArray
 
-  val turnSpeed = 0.018f
-  val moveSpeed = 0.05f
+  var fileData = ""
+  val request = new XMLHttpRequest()
+  request.open("GET", "http://localhost:8080/teapot.obj", async = true)
+  request.send(null)
+  request.onreadystatechange = (e: Event) => {
+    if (request.readyState == 4) {
+        timers.setInterval(16)(() -> update(canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]))
+//      dom.window.alert(request.responseText)
+    }
+  }
+  lazy val rawPoints: Array[(Vec, Int)] =
+    request.responseText.split("\n")
+      .filter(_.startsWith("v  "))
+      .map(line => {
+        Vec(line.split("  ").tail.map(_.toFloat) :+ 1f)
+      })
+      .zipWithIndex
+
+  lazy val normals: Array[Vec] =
+    request.responseText.split("\n")
+      .filter(_.startsWith("vn  "))
+      .map(line => {
+        Vec(line.split("  ").tail.map(_.toFloat))
+      })
+
+  lazy val worldPoints: Array[(Vec, Vec)] =
+    request.responseText.split("\n")
+      .filter(_.startsWith("f  "))
+      .flatMap(line => line.split("  ").tail.map(_.toInt))
+      .map(index => {
+        (rawPoints(index-1)._1, normals(rawPoints(index-1)._2))
+      })
+
+  val turnSpeed = 0.009f
+  val moveSpeed = 0.3f
 
   var delta = 0f
   var rotationX = 0f
@@ -43,18 +77,16 @@ object App extends JSApp {
   var rotationZ = 0f
   var translateX = 0f
   var translateY = 0f
-  var translateZ = 0f
+  var translateZ = 100f
 
   def onKeyDown(e: KeyboardEvent): Unit = {
-//    println("KEY DOWN! " + e.keyCode)
-
     e.keyCode match {
-      case KeyCode.Left => rotationY -= turnSpeed*delta
-      case KeyCode.Right => rotationY += turnSpeed*delta
-      case KeyCode.Up => rotationX -= turnSpeed*delta
-      case KeyCode.Down => rotationX += turnSpeed*delta
-      case KeyCode.A => translateX -= moveSpeed*delta
-      case KeyCode.D => translateX += moveSpeed*delta
+      case KeyCode.Left => rotationY += turnSpeed*delta
+      case KeyCode.Right => rotationY -= turnSpeed*delta
+      case KeyCode.Up => rotationX += turnSpeed*delta
+      case KeyCode.Down => rotationX -= turnSpeed*delta
+      case KeyCode.A => translateX += moveSpeed*delta
+      case KeyCode.D => translateX -= moveSpeed*delta
       case KeyCode.W => translateZ += moveSpeed*delta
       case KeyCode.S => translateZ -= moveSpeed*delta
       case KeyCode.Space => translateY += moveSpeed*delta
@@ -73,29 +105,22 @@ object App extends JSApp {
       Vec(translateX, translateY, translateZ), // translate
       Vec(1, 1, 1), // scale
       Vec(rotationX, rotationY, rotationZ), // rotate
-      90, 90, 1, 5,
-      g.canvas.width, g.canvas.height) // screen coords)
+      90, 90, 1, 1000,
+      g.canvas.width, g.canvas.height) // screen coords
 
-//    println(screenPoints.sliding(3).next().map(v => v.z).mkString(","))
-    println((screenPoints.head.z * 1000).toInt)
-
-    screenPoints.foreach(vec => {
-      g.fillStyle=s"rgb(0,0,${(vec.z*255).toInt})"
+    screenPoints
+      .sliding(3, 3).toSeq
+        .sortWith((left, right) => {
+          left.map(_._1).foldLeft(0f)((a, v) => a + v.z) <
+          right.map(_._1).foldLeft(0f)((a, v) => a + v.z)
+        })
+      .foreach((vecs: Array[(Vec, Vec)]) => {
+      g.fillStyle=s"rgb(0,0,${(vecs.foldLeft(0f)((a: Float, vn: (Vec, Vec)) => a + vn._2.y+vn._2.x+2)/6/2*255).toInt})"
       g.beginPath()
-      g.arc(vec.x, vec.y, 0f max 3/vec.z, 0, 2*math.Pi)
+      g.moveTo(vecs.last._1.x, vecs.last._1.y)
+      vecs.foreach(vec => g.lineTo(vec._1.x, vec._1.y))
       g.fill()
     })
-
-    /*
-    screenPoints.sliding(3, 3).foreach((vecs: Array[Vec]) => {
-//      println(s"${(vecs.foldLeft(0f)((a, vec) => a + vec.z)/3f*255).toInt}")
-      g.fillStyle=s"rgb(0,0,${(vecs.foldLeft(0f)((a, vec) => a + (0f max vec.z min 1f))/3f*255).toInt})"
-      g.beginPath()
-      g.moveTo(vecs.last.x, vecs.last.y)
-      vecs.foreach(vec => g.lineTo(vec.x, vec.y))
-      g.fill()
-    })
-    */
   }
 
   def log(obj: js.Any) = g.console.log(obj)

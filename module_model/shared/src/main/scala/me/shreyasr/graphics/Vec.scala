@@ -3,6 +3,7 @@ package me.shreyasr.graphics
 object Vec {
 
   def apply(values: Float*) = new Vec(values :_*)
+  def apply(values: Array[Float]) = new Vec(values :_*)
 }
 
 class Vec private(private val values: Float*) {

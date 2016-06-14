@@ -1,0 +1,104 @@
+% Translation Matrix
+
+\begin{bmatrix}
+  1 & 0 & 0 & Translation.x \\
+  0 & 1 & 0 & Translation.x \\
+  0 & 0 & 1 & Translation.x \\
+  0 & 0 & 0 & 1 \\
+\end{bmatrix}
+\begin{bmatrix}
+  X \\
+  Y \\
+  Z \\
+  1 \\
+\end{bmatrix} =
+\begin{bmatrix}
+  X + Translation.x \\
+  Y + Translation.y \\
+  Z + Translation.z \\
+  1 \\
+\end{bmatrix}
+
+% Rotate About X Matrix
+
+T=
+\begin{bmatrix}
+  1 & 0 & 0 & 0 \\
+  0 & cos\left(\theta\right) & -sin\left(\theta\right) & 0 \\
+  0 & sin\left(\theta\right) & cos\left(\theta\right) & 0 \\
+  0 & 0 & 0 & 1 \\
+\end{bmatrix}
+\begin{bmatrix}
+  X \\
+  Y \\
+  Z \\
+  1 \\
+\end{bmatrix} =
+\begin{bmatrix}
+  X \\
+  Y \cdot cos\left(\theta\right) - Z \cdot sin\left(\theta\right) \\
+  Y \cdot sin\left(\theta\right) + Z \cdot cos\left(\theta\right) \\
+  1 \\
+\end{bmatrix}
+
+% Rotate About Y and Z Matrix
+
+\begin{align*}
+\begin{bmatrix}
+  cos\left(\theta\right) & 0 & sin\left(\theta\right) & 0 \\
+  0 & 1 & 0 & 0 \\
+  -sin\left(\theta\right) & 0 & cos\left(\theta\right) & 0 \\
+  0 & 0 & 0 & 1 \\
+\end{bmatrix}
+\begin{bmatrix}
+  X \\
+  Y \\
+  Z \\
+  1 \\
+\end{bmatrix} &=
+\begin{bmatrix}
+  X \cdot cos\left(\theta\right) + Z \cdot sin\left(\theta\right) \\
+  Y \\
+  -X \cdot sin\left(\theta\right) + Z \cdot cos\left(\theta\right) \\
+  1 \\
+\end{bmatrix} \\
+\begin{bmatrix}
+  cos\left(\theta\right) & -sin\left(\theta\right) & 0 & 0 \\
+  sin\left(\theta\right) & cos\left(\theta\right) & 0 & 0 \\
+  0 & 0 & 1 & 0 \\
+  0 & 0 & 0 & 1 \\
+\end{bmatrix}
+\begin{bmatrix}
+  X \\
+  Y \\
+  Z \\
+  1 \\
+\end{bmatrix} &=
+\begin{bmatrix}
+  X \cdot cos\left(\theta\right) - Y \cdot sin\left(\theta\right) \\
+  X \cdot sin\left(\theta\right) + Y \cdot cos\left(\theta\right) \\
+  Z \\
+  1 \\
+\end{bmatrix}
+\end{align*}
+
+% Combine Rotate About Y and Translate
+
+\begin{bmatrix}
+  1 & 0 & 0 & 5 \\
+  0 & 1 & 0 & 4 \\
+  0 & 0 & 1 & 2 \\
+  0 & 0 & 0 & 1 \\
+\end{bmatrix}
+\begin{bmatrix}
+  cos\left(\frac{\pi}{6}\right) & 0 & sin\left(\frac{\pi}{6}\right) & 0 \\
+  0 & 1 & 0 & 0 \\
+  -sin\left(\frac{\pi}{6}\right) & 0 & cos\left(\frac{\pi}{6}\right) & 0 \\
+  0 & 0 & 0 & 1 \\
+\end{bmatrix} =
+\begin{bmatrix}
+\frac{\sqrt{3}}{2} & 0 & \frac{1}{2} & 5 \\
+0 & 1 & 0 & 4 \\
+-\frac{1}{2} & 0 & \frac{\sqrt{3}}{2} & 2 \\
+0 & 0 & 0 & 1 \\
+\end{bmatrix}
