@@ -1,4 +1,3 @@
-target
 *.class
 
 *.iml
@@ -8,3 +7,10 @@ target
 /out
 
 /node_modules
+
+module_frontend/target/*
+!module_frontend/target/scala-2.11/
+/project/
+/target/
+/module_model/js/
+/module_model/jvm/
