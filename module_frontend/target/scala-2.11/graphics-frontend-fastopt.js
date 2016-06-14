@@ -5597,7 +5597,7 @@ $c_Lme_shreyasr_graphics_App$.prototype.init___ = (function() {
   this.engine$1 = new $c_Lme_shreyasr_graphics_Engine().init___();
   this.fileData$1 = "";
   this.request$1 = new $g.XMLHttpRequest();
-  this.request$1.open("GET", "http://localhost:8080/teapot.obj", true);
+  this.request$1.open("GET", "teapot.obj", true);
   this.request$1.send(null);
   this.request$1.onreadystatechange = (function(f) {
     return (function(arg1) {

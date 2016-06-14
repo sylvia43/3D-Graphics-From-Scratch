@@ -37,7 +37,7 @@ object App extends JSApp {
 
   var fileData = ""
   val request = new XMLHttpRequest()
-  request.open("GET", "http://localhost:8080/teapot.obj", async = true)
+  request.open("GET", "teapot.obj", async = true)
   request.send(null)
   request.onreadystatechange = (e: Event) => {
     if (request.readyState == 4) {
