@@ -1,6 +1,6 @@
 # Graphics
 
-3D Graphics implemented from scratch, for fun. I wrote a linear algebra library from scratch then implemented it in a Scala.js project to create an [interactive online demo](anubiann00b.github.io/Graphics).
+3D Graphics implemented from scratch, for fun. I wrote a linear algebra library from scratch then implemented it in a Scala.js project to create an [interactive online demo](https://anubiann00b.github.io/Graphics).
 
 This was my final project for Linear Algebra at Bellevue College. Check out my [presentation slides](https://docs.google.com/presentation/d/1g4EpVgR5TG7khKvMejvNLPjuj-Lxkps9VCQrgyL75dc/edit?usp=sharing).
 
