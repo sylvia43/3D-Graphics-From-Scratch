@@ -4,7 +4,7 @@
 
 This was my final project for Linear Algebra at Bellevue College. Check out my [presentation slides](https://docs.google.com/presentation/d/1g4EpVgR5TG7khKvMejvNLPjuj-Lxkps9VCQrgyL75dc/edit?usp=sharing).
 
-![Screenshot of demo with teapot model](screenshot.png)
+![Screenshot of demo with teapot model](images/screenshot.png)
 
 ## Controls
 
@@ -27,15 +27,31 @@ python -m SimpleHTTPServer 8080
 
 And navigate to `localhost:8080`
 
+To run tests, you need [PhantomJS](http://phantomjs.org/download.html).
+
 ## Description
 
 The [slides](https://docs.google.com/presentation/d/1g4EpVgR5TG7khKvMejvNLPjuj-Lxkps9VCQrgyL75dc/edit?usp=sharing) have more information and images.
 
-We start with coordinates in **model space**. These coordinates are from our actual 3D models and all the points are relative to the model and often within [-1,1]. From these coordinates, we need to put each model at it's position and orientation into **world space**. We use simple matrix transformations for this. These transformations can be combined by simply multiplying them together, giving us a single matrix for all the combined model space -> world space transformations for each object.
+We start with coordinates in **model space**. These coordinates are from our actual 3D models and all the points are relative to the model and often within [-1,1]. From these coordinates, we need to put each model at it's position and orientation into **world space**. We use simple matrix transformations for this. These transformations can be combined by simply multiplying them together, giving us a single matrix for all the combined model space -> world space transformations for each object. Here are a couple of our transformation matrices:
+
+Translation
+![Translation Matrix](images/translation_matrix.png)
+
+Rotation About X
+![Rotation About X Matrix](images/rotation_x_matrix.png)
+
+A combination of a rotation about Y by 30 degrees followed by a translation by (5,4,2).
+![Combined Transformation](images/combined_transformation.png)
+
+An application of that combined transformation on the point (8, 3, 4).
+![Combined Transformation](images/combined_transformation_application.png)
 
 From there, we need to convert world space into **view space**. This is just the world space relative to the camera position and orientation. For our next step, we need the world relative to a camera looking down the Z axis. This is just a matter of translation and rotation to make the world axes match the required camera axes. However, this demo currently does not actually do this transformation, instead just transforming an object in front of the camera at the default position.
 
 Once we get to view space, we need to get our **projection space**. This is just a cube with each axis in [-1,1] with a camera perspective in the shape of a frustum. Essentially, this is just giving closer objects more screen real estate than further objects, like our eyes or a camera in the real world. This can be done with a single complicated matrix transformation:
+
+![Projection Matrix](images/projection_matrix.png)
 
 From projection space, we go to **screen space**, which is just flattening that cube, and scaling it to the screen dimensions. Screen space can be drawn directly on the screen!
 
@@ -60,8 +76,10 @@ All the code for the Matrix class. Matrices are represented as an array of float
 
 This object contains all the methods to apply transformations onto an array of vectors.
 
-These classes have tests: [VectorTest.scala](module_model/shared/src/test/scala/VectorTest.scala) and [MatrixTest.scala](module_model/shared/src/test/scala/MatrixTest.scala).
+ * [VectorTest.scala](module_model/shared/src/test/scala/VectorTest.scala) and [MatrixTest.scala](module_model/shared/src/test/scala/MatrixTest.scala)
+
+Tests for the Mat and Vec classes. These were used throughout development to avoid having to rebuild the website every code change. The tests can run on PhantomJS, saving a lot of time and energy.
 
  * [App.scala](module_frontend/src/main/scala/me/shreyasr/graphics/App.scala)
 
-This is the code for the actual website.
+This is the code for the actual website. It's transpiled to Javascript using [Scala.js](https://www.scala-js.org/).

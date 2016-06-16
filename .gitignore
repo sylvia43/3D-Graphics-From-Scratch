@@ -16,3 +16,5 @@ module_frontend/target/*
 /target/
 /module_model/js/
 /module_model/jvm/
+
+phantomjs.exe
